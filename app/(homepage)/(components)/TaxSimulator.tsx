@@ -5,6 +5,7 @@ import { IncomeInput } from "./IncomeInput";
 import { BracketList } from "./BracketList";
 import { Summary } from "./Summary";
 import { Card, CardBody } from "@heroui/card";
+import { Button } from "@heroui/button";
 
 export type Bracket = { upTo: number | undefined; rate: number; id: number };
 
@@ -80,8 +81,8 @@ export default function TaxSimulator() {
     if (isValidOrder(sorted)) setBrackets(sorted);
   };
 
-  const removeBracket = (index: any) => {
-    setBrackets(brackets.filter((_: any, i: any) => i !== index));
+  const removeBracket = (bracket: Bracket) => {
+    setBrackets(brackets.filter((b: Bracket) => b.id !== bracket.id));
   };
 
   const calculateTaxes = () => {
@@ -98,8 +99,31 @@ export default function TaxSimulator() {
     return totalTax;
   };
 
+  const getMarginalRate = () => {
+    const sorted = sortBrackets(brackets);
+    for (const bracket of sorted) {
+      if ((income ?? Infinity) <= bracket.upTo) {
+        return bracket.rate;
+      }
+    }
+    return sorted[sorted.length - 1].rate;
+  };
+
+  const resetAll = () => {
+    localStorage.removeItem("income");
+    localStorage.removeItem("brackets");
+    setIncome(undefined);
+    setBrackets([
+      { upTo: 28000, rate: 23, id: 1 },
+      { upTo: 50000, rate: 35, id: 2 },
+      { upTo: undefined, rate: 43, id: 3 },
+    ]);
+  };
+
   const totalTaxes = income ? calculateTaxes() : 0;
   const netIncome = income ? income - totalTaxes : 0;
+  const marginalRate = income ? getMarginalRate() : 0;
+  const averageRate = income ? (totalTaxes / income) * 100 : 0;
 
   return (
     <div className="max-w-3xl mx-auto p-6 space-y-6">
@@ -115,7 +139,17 @@ export default function TaxSimulator() {
             onAdd={addBracket}
             onRemove={removeBracket}
           />
-          <Summary totalTaxes={totalTaxes} netIncome={netIncome} />
+          <Summary
+            totalTaxes={totalTaxes}
+            netIncome={netIncome}
+            marginalRate={marginalRate}
+            averageRate={averageRate}
+          />
+          <div className="pt-2">
+            <Button variant="solid" onPress={resetAll} className="w-full">
+              Reset Dati
+            </Button>
+          </div>
         </CardBody>
       </Card>
     </div>
