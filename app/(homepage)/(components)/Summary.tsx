@@ -1,5 +1,3 @@
-'use client';
-
 export function Summary({ totalTaxes, netIncome }: {totalTaxes: number, netIncome: number}) {
     return (
       <div className="mt-4 space-y-2 rounded-xl">
