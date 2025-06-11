@@ -24,23 +24,27 @@ export function Summary({ totalTaxes, netIncome, marginalRate, averageRate }: { 
       <p className="text-lg font-semibold text-green-800">Reddito Netto: € {netIncome.toFixed(2)}</p>
       <p className="text-sm text-gray-700">Aliquota Marginale: {marginalRate.toFixed(2)}%</p>
       <p className="text-sm text-gray-700">Aliquota Media: {averageRate.toFixed(2)}%</p>
-      <ResponsiveContainer width="100%" height={200}>
-        <PieChart>
-          <Pie
-            data={data}
-            cx="50%"
-            cy="50%"
-            labelLine={false}
-            outerRadius={80}
-            dataKey="value"
-            label={({ name, percent }: { name: string; percent: number }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-          >
-            {data.map((_, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-            ))}
-          </Pie>
-        </PieChart>
-      </ResponsiveContainer>
+      {
+        totalTaxes === 0 && netIncome === 0
+        ? <p className="text-sm text-gray-500">Inserisci un reddito e le aliquote per visualizzare il grafico.</p> 
+        : <ResponsiveContainer width="100%" height={200}>
+            <PieChart>
+              <Pie
+                data={data}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                outerRadius={80}
+                dataKey="value"
+                label={({ name, percent }: { name: string; percent: number }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+              >
+                {data.map((_, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+            </PieChart>
+          </ResponsiveContainer>
+      }
     </div>
   );
 }
