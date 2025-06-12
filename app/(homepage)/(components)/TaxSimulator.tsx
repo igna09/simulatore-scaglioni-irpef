@@ -9,6 +9,12 @@ import { Button } from "@heroui/button";
 
 export type Bracket = { upTo: number | undefined; rate: number; id: number };
 
+const defaultBrackets: Bracket[] = [
+  { upTo: 28000, rate: 23, id: 1 },
+  { upTo: 50000, rate: 35, id: 2 },
+  { upTo: undefined, rate: 43, id: 3 },
+];
+
 export default function TaxSimulator() {
   const [income, setIncome] = useState<number | undefined>(undefined);
 
@@ -25,11 +31,7 @@ export default function TaxSimulator() {
     const saved = localStorage.getItem("brackets");
     setBrackets(saved
       ? JSON.parse(saved).map((b: any) => ({ ...b, upTo: Number.isNaN(b.upTo) ? undefined : +b.upTo }))
-      : [
-          { upTo: 28000, rate: 23, id: 1 },
-          { upTo: 50000, rate: 35, id: 2 },
-          { upTo: undefined, rate: 43, id: 3 },
-        ]);
+      : defaultBrackets);
   }, []);
 
   useEffect(() => {
@@ -113,11 +115,7 @@ export default function TaxSimulator() {
     localStorage.removeItem("income");
     localStorage.removeItem("brackets");
     setIncome(undefined);
-    setBrackets([
-      { upTo: 28000, rate: 23, id: 1 },
-      { upTo: 50000, rate: 35, id: 2 },
-      { upTo: undefined, rate: 43, id: 3 },
-    ]);
+    setBrackets(defaultBrackets);
   };
 
   const totalTaxes = income ? calculateTaxes() : 0;
